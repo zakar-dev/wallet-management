@@ -1,5 +1,5 @@
 import {
-  CATEGORIES_PAR_DEFAUT, GROUPES_PAR_DEFAUT, categorieUtilisee, categoriesParGroupe, erreurCategorie,
+  CATEGORIES_PAR_DEFAUT, GROUPES_PAR_DEFAUT, categorieUtilisee, categoriesDuGroupe, categoriesParGroupe, groupesTries, prochainOrdre, erreurCategorie,
   erreurGroupe, natureDeCategorie, rechercherCategories,
 } from '@/src/domaine/categories';
 import type { Categorie } from '@/src/domaine/types';
@@ -51,4 +51,25 @@ test('validations', () => {
   expect(erreurCategorie({ nom: 'Taxi', groupeId: 'g' })).toBeNull();
   expect(erreurGroupe({ nom: ' ' })).toBe('Donnez un nom au groupe');
   expect(erreurGroupe({ nom: 'Enfants' })).toBeNull();
+});
+
+test('categoriesDuGroupe : favoris puis alphabétique, groupe vide accepté', () => {
+  const cats: Categorie[] = [
+    { id: '1', nom: 'Zakat', icone: 'gift', couleur: '#fff', groupeId: 'g', favori: false },
+    { id: '2', nom: 'Café', icone: 'coffee', couleur: '#fff', groupeId: 'g', favori: false },
+    { id: '3', nom: 'Taxi', icone: 'car', couleur: '#fff', groupeId: 'g', favori: true },
+    { id: '4', nom: 'Salaire', icone: 'briefcase', couleur: '#fff', groupeId: 'autre', favori: false },
+  ];
+  expect(categoriesDuGroupe(cats, 'g').map((c) => c.nom)).toEqual(['Taxi', 'Café', 'Zakat']);
+  expect(categoriesDuGroupe(cats, 'vide')).toEqual([]);
+});
+
+test('prochainOrdre', () => {
+  expect(prochainOrdre(GROUPES_PAR_DEFAUT)).toBe(4);
+  expect(prochainOrdre([])).toBe(0);
+});
+
+test('groupesTries suit ordre', () => {
+  const inverses = [...GROUPES_PAR_DEFAUT].reverse();
+  expect(groupesTries(inverses).map((g) => g.id)).toEqual(GROUPES_PAR_DEFAUT.map((g) => g.id));
 });

@@ -84,3 +84,16 @@ export function erreurCategorie(c: { nom: string; groupeId: string }): string | 
 export function erreurGroupe(g: { nom: string }): string | null {
   return g.nom.trim() ? null : 'Donnez un nom au groupe';
 }
+
+/** Catégories d'un groupe (même vide), favoris d'abord puis par nom. */
+export function categoriesDuGroupe(categories: Categorie[], groupeId: string): Categorie[] {
+  return categories.filter((c) => c.groupeId === groupeId).sort(parFavoriPuisNom);
+}
+
+export function prochainOrdre(groupes: Groupe[]): number {
+  return groupes.reduce((max, g) => Math.max(max, g.ordre + 1), 0);
+}
+
+export function groupesTries(groupes: Groupe[]): Groupe[] {
+  return [...groupes].sort((a, b) => a.ordre - b.ordre);
+}
