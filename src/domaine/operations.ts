@@ -88,3 +88,8 @@ export function filtrerOperations(
 export function operationsRecentes(ops: Operation[], n: number): Operation[] {
   return trierOperations(ops).slice(0, n);
 }
+
+export function categoriesUtilisees(categories: Categorie[], ops: Operation[]): Categorie[] {
+  const ids = new Set(ops.map((o) => o.categorieId));
+  return categories.filter((c) => ids.has(c.id)).sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+}

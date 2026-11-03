@@ -1,5 +1,5 @@
 import {
-  FILTRE_VIDE, erreurOperation, filtrerOperations, grouperParJour, operationsRecentes, versBrouillon,
+  FILTRE_VIDE, categoriesUtilisees, erreurOperation, filtrerOperations, grouperParJour, operationsRecentes, versBrouillon,
   versOperation, type Brouillon,
 } from '@/src/domaine/operations';
 import { CATEGORIES_PAR_DEFAUT } from '@/src/domaine/categories';
@@ -69,4 +69,8 @@ describe('filtrerOperations', () => {
 
 test('operationsRecentes', () => {
   expect(operationsRecentes(ops, 2).map((o) => o.id)).toEqual(['3', '2']); // même date : dernière saisie d'abord
+});
+
+test('categoriesUtilisees : seulement celles présentes dans les opérations, par nom', () => {
+  expect(categoriesUtilisees(CATEGORIES_PAR_DEFAUT, ops).map((c) => c.nom)).toEqual(['Café', 'Courses', 'Salaire']);
 });

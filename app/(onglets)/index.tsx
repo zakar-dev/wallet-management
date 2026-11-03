@@ -2,9 +2,11 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { comptesActifs, disponible, patrimoineNet, soldeCompte } from '@/src/domaine/comptes';
 import { formatMontant } from '@/src/domaine/montant';
+import { operationsRecentes } from '@/src/domaine/operations';
 import { useDonnees } from '@/src/stockage/DonneesProvider';
 import { CarteCompte } from '@/src/ui/CarteCompte';
 import { Ecran } from '@/src/ui/Ecran';
+import { LigneOperation } from '@/src/ui/LigneOperation';
 import { Ligne, Section } from '@/src/ui/Liste';
 import { Texte } from '@/src/ui/Texte';
 import { useTheme } from '@/src/ui/theme';
@@ -39,6 +41,19 @@ export default function Accueil() {
               onPress={() => router.push(`/comptes/${c.id}`)} />
           ))}
         </View>
+      )}
+
+      {operations.length > 0 && (
+        <Section
+          titre="Récent"
+          onPressTitre={() => router.push('/operations')}
+          droiteTitre={<Texte variante="petit" couleur={t.accent}>Tout voir</Texte>}
+        >
+          {operationsRecentes(operations, 5).map((o) => (
+            <LigneOperation key={o.id} operation={o} donnees={donnees}
+              onPress={() => router.push(`/ajout?id=${o.id}`)} />
+          ))}
+        </Section>
       )}
     </Ecran>
   );
