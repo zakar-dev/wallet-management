@@ -35,15 +35,15 @@ test('disponible = courants + espèces non archivés', () => {
 });
 
 test('resteDette', () => {
-  const d: Dette = { id: 'd', personne: 'Ali', sens: 'je_dois', montant: 100000,
-    remboursements: [{ date: '2026-11-01', montant: 30000 }] };
+  const d: Dette = { id: 'd', personne: 'Ali', sens: 'je_dois', montant: 100000, date: '2026-10-01',
+    remboursements: [{ id: 'r1', date: '2026-11-01', montant: 30000 }] };
   expect(resteDette(d)).toBe(70000);
 });
 
 test('patrimoine net = tous les comptes + créances − dettes restantes', () => {
   const dettes: Dette[] = [
-    { id: 'a', personne: 'Ali', sens: 'je_dois', montant: 100000, remboursements: [{ date: '2026-11-01', montant: 30000 }] },
-    { id: 'b', personne: 'Sara', sens: 'on_me_doit', montant: 50000, remboursements: [] },
+    { id: 'a', personne: 'Ali', sens: 'je_dois', montant: 100000, date: '2026-10-01', remboursements: [{ id: 'r1', date: '2026-11-01', montant: 30000 }] },
+    { id: 'b', personne: 'Sara', sens: 'on_me_doit', montant: 50000, date: '2026-10-01', remboursements: [] },
   ];
   expect(patrimoineNet([courant, epargne, especes], ops, dettes))
     .toBe(644950 + 700000 + 26500 + 50000 - 70000);

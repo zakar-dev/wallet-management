@@ -8,6 +8,8 @@ export interface Brouillon {
   categorieId?: string; date: DateISO; libelle: string; horsSolde: boolean;
   /** Conservé quand on modifie une occurrence de récurrence. */
   recurrenceId?: string;
+  /** Opération liée à une dette : pas de catégorie exigée. */
+  detteId?: string;
 }
 
 export function erreurOperation(b: Brouillon): string | null {
@@ -16,7 +18,7 @@ export function erreurOperation(b: Brouillon): string | null {
   if (b.type === 'transfert') {
     if (!b.compteDestId) return 'Choisissez le compte de destination';
     if (b.compteDestId === b.compteId) return 'Choisissez deux comptes différents';
-  } else if (!b.categorieId) {
+  } else if (!b.categorieId && !b.detteId) {
     return 'Choisissez une catégorie';
   }
   if (!estDateValide(b.date)) return 'Date invalide';
@@ -30,9 +32,10 @@ export function versOperation(b: Brouillon, id: string): Operation {
     date: b.date, libelle: b.libelle.trim(),
   };
   if (b.type === 'transfert') o.compteDestId = b.compteDestId;
-  else o.categorieId = b.categorieId;
+  else if (b.categorieId) o.categorieId = b.categorieId;
   if (b.horsSolde) o.horsSolde = true;
   if (b.recurrenceId) o.recurrenceId = b.recurrenceId;
+  if (b.detteId) o.detteId = b.detteId;
   return o;
 }
 
@@ -40,7 +43,7 @@ export function versBrouillon(o: Operation): Brouillon {
   return {
     type: o.type, montant: o.montant, compteId: o.compteId, compteDestId: o.compteDestId,
     categorieId: o.categorieId, date: o.date, libelle: o.libelle, horsSolde: Boolean(o.horsSolde),
-    recurrenceId: o.recurrenceId,
+    recurrenceId: o.recurrenceId, detteId: o.detteId,
   };
 }
 

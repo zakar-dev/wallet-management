@@ -109,3 +109,14 @@ test('modifier une occurrence conserve son recurrenceId', () => {
   const occurrence = { ...o, recurrenceId: 'r1' };
   expect(versOperation(versBrouillon(occurrence), 'x')).toEqual(occurrence);
 });
+
+describe('opérations liées à une dette', () => {
+  test('pas de catégorie exigée', () => {
+    expect(erreurOperation({ ...base, categorieId: undefined, detteId: 'd1' })).toBeNull();
+  });
+  test('detteId conservé à la modification', () => {
+    const o = { ...versOperation({ ...base, categorieId: undefined, detteId: 'd1' }, 'x') };
+    expect(o.detteId).toBe('d1');
+    expect(versOperation(versBrouillon(o), 'x')).toEqual(o);
+  });
+});

@@ -19,11 +19,13 @@ export interface Operation {
   compteDestId?: string; categorieId?: string; libelle: string; recurrenceId?: string;
   /** Opération historique déjà reflétée dans le solde d'ouverture : exclue de tous les calculs. */
   horsSolde?: boolean;
+  /** Mouvement d'argent d'une dette : compte dans les soldes, jamais dans le budget ni les analyses. */
+  detteId?: string;
 }
 
 export interface Assignation { id: string; mois: Mois; categorieId: string; montant: Centimes }
 
-export type ModeleOperation = Omit<Operation, 'id' | 'date' | 'recurrenceId' | 'horsSolde'>;
+export type ModeleOperation = Omit<Operation, 'id' | 'date' | 'recurrenceId' | 'horsSolde' | 'detteId'>;
 /** Récurrence mensuelle : `jour` 1–31, ramené au dernier jour des mois plus courts. */
 export interface Recurrence {
   id: string; modele: ModeleOperation; jour: number; prochaineEcheance: DateISO; active: boolean;
@@ -33,10 +35,13 @@ export interface Objectif {
   id: string; nom: string; icone: string; cible: Centimes; echeance?: DateISO; reserve: Centimes;
 }
 
-export interface Remboursement { date: DateISO; montant: Centimes }
+export interface Remboursement { id: string; date: DateISO; montant: Centimes; operationId?: string }
+export type SensDette = 'on_me_doit' | 'je_dois';
 export interface Dette {
-  id: string; personne: string; sens: 'on_me_doit' | 'je_dois'; montant: Centimes;
+  id: string; personne: string; sens: SensDette; montant: Centimes; date: DateISO;
   remboursements: Remboursement[];
+  /** Opération créée sur un compte au moment du prêt ou de l'emprunt. */
+  operationId?: string;
 }
 
 export interface Donnees {
