@@ -1,5 +1,5 @@
 import {
-  creerRecurrence, echeancesDues, libelleRecurrence, parseJour, prochaineEcheanceApres, reactiver,
+  creerRecurrence, echeancesDues, libelleRecurrence, parseJour, prochaineEcheanceApres, reactiver, trierRecurrences,
 } from '@/src/domaine/recurrences';
 import type { Operation, Recurrence } from '@/src/domaine/types';
 
@@ -90,4 +90,11 @@ test('parseJour', () => {
   expect(parseJour(' 1 ')).toBe(1);
   expect(parseJour('31')).toBe(31);
   for (const x of ['', '0', '32', '3.5', 'a', '-2']) expect(parseJour(x)).toBeNull();
+});
+
+test('trierRecurrences : actives d’abord, puis par prochaine échéance', () => {
+  const r = (id: string, active: boolean, prochaineEcheance: string): Recurrence =>
+    ({ id, active, prochaineEcheance, jour: 1, modele: { montant: 1, type: 'depense', compteId: 'a', libelle: '' } });
+  expect(trierRecurrences([r('a', false, '2026-11-01'), r('b', true, '2026-12-10'), r('c', true, '2026-11-20')])
+    .map((x) => x.id)).toEqual(['c', 'b', 'a']);
 });

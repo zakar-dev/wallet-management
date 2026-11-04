@@ -44,3 +44,8 @@ export function parseJour(texte: string): number | null {
   const n = Number(t);
   return n >= 1 && n <= 31 ? n : null;
 }
+
+export function trierRecurrences(recs: Recurrence[]): Recurrence[] {
+  return [...recs].sort((a, b) =>
+    Number(b.active) - Number(a.active) || a.prochaineEcheance.localeCompare(b.prochaineEcheance));
+}
