@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { ScrollView, TextInput, View } from 'react-native';
+import { ScrollView, Switch, TextInput, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Check } from 'lucide-react-native';
 import { compteParDefaut, comptesActifs } from '@/src/domaine/comptes';
 import { ajouterJours, aujourdhui } from '@/src/domaine/dates';
 import { nouvelId } from '@/src/domaine/id';
 import { formatMontant, parseMontant } from '@/src/domaine/montant';
-import { erreurOperation, versBrouillon, versOperation, type Brouillon } from '@/src/domaine/operations';
+import {
+  erreurOperation, horsSoldeSelonDate, versBrouillon, versOperation, type Brouillon,
+} from '@/src/domaine/operations';
+import { creerRecurrence, libelleRecurrence, parseJour } from '@/src/domaine/recurrences';
 import type { TypeOperation } from '@/src/domaine/types';
 import { useDonnees } from '@/src/stockage/DonneesProvider';
 import { BoutonSupprimer } from '@/src/ui/BoutonSupprimer';
@@ -41,15 +44,30 @@ export default function Ajout() {
   });
   const [montantTexte, setMontantTexte] = useState(existante ? formatMontant(existante.montant) : '');
   const [ouvert, setOuvert] = useState<Ouvert>(null);
+  // « Déjà incluse dans le solde » suit la date tant que l'utilisateur n'y a pas touché.
+  const [horsSoldeTouche, setHorsSoldeTouche] = useState(Boolean(existante));
+  const [recurrente, setRecurrente] = useState(false);
+  const [jourTexte, setJourTexte] = useState('');
+  const recurrence = donnees.recurrences.find((r) => r.id === existante?.recurrenceId);
 
   const brouillon: Brouillon = { ...b, montant: parseMontant(montantTexte) };
-  const erreur = erreurOperation(brouillon);
+  const jour = parseJour(jourTexte);
+  const erreur = erreurOperation(brouillon) ?? (recurrente && jour === null ? 'Jour du mois entre 1 et 31' : null);
   const maj = (p: Partial<Brouillon>) => setB((x) => ({ ...x, ...p }));
   const fermer = () => retour('/');
+  const changerDate = (date: string) => setB((x) => ({
+    ...x, date, horsSolde: horsSoldeTouche ? x.horsSolde : horsSoldeSelonDate(date, aujourdhui()),
+  }));
 
   async function valider() {
     if (erreur) return;
-    await enregistrer('operations', versOperation(brouillon, existante?.id ?? nouvelId()));
+    let op = versOperation(brouillon, existante?.id ?? nouvelId());
+    if (recurrente && jour !== null) {
+      const rec = creerRecurrence(op, jour, nouvelId(), aujourdhui());
+      op = { ...op, recurrenceId: rec.id };
+      await enregistrer('recurrences', rec);
+    }
+    await enregistrer('operations', op);
     fermer();
   }
 
@@ -139,15 +157,41 @@ export default function Ajout() {
         )}
 
         <Section>
-          <Champ etiquette="Date" value={b.date} onChangeText={(date) => maj({ date })} placeholder="AAAA-MM-JJ" chiffres />
+          <Champ etiquette="Date" value={b.date} onChangeText={changerDate} placeholder="AAAA-MM-JJ" chiffres />
           <Champ etiquette="Libellé" value={b.libelle} onChangeText={(libelle) => maj({ libelle })}
             placeholder="Facultatif" />
         </Section>
         <Puces
           options={[{ valeur: today, libelle: "Aujourd'hui" }, { valeur: ajouterJours(today, -1), libelle: 'Hier' }]}
           valeur={b.date}
-          onChange={(date) => date && maj({ date })}
+          onChange={(date) => date && changerDate(date)}
         />
+
+        <Section pied={b.horsSolde ? "Opération historique : elle n'est comptée ni dans les soldes ni dans les totaux." : undefined}>
+          <Ligne titre="Déjà incluse dans le solde" droite={
+            <Switch value={b.horsSolde} onValueChange={(v) => { setHorsSoldeTouche(true); maj({ horsSolde: v }); }} />
+          } />
+        </Section>
+
+        {recurrence ? (
+          <Section>
+            <Ligne titre="Récurrente" icone="repeat" couleurIcone="#bf5af2" valeur={libelleRecurrence(recurrence)}
+              chevron onPress={() => router.push(`/recurrences/${recurrence.id}`)} />
+          </Section>
+        ) : (
+          <Section pied={recurrente && jour !== null ? `Créée automatiquement ${libelleRecurrence({ jour })}.` : undefined}>
+            <Ligne titre="Récurrente chaque mois" icone="repeat" couleurIcone="#bf5af2" droite={
+              <Switch value={recurrente} onValueChange={(v) => {
+                setRecurrente(v);
+                if (v && !jourTexte) setJourTexte(String(Number(b.date.slice(8, 10)) || 1));
+              }} />
+            } />
+            {recurrente ? (
+              <Champ etiquette="Jour du mois" value={jourTexte} onChangeText={setJourTexte}
+                keyboardType="number-pad" placeholder="1 à 31" chiffres />
+            ) : null}
+          </Section>
+        )}
 
         {montantTexte !== '' && erreur && (
           <Texte variante="petit" couleur={t.erreur} style={{ marginHorizontal: 32, marginTop: 14 }}>{erreur}</Texte>

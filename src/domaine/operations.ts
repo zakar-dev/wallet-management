@@ -6,6 +6,8 @@ import type { Categorie, Operation, TypeOperation } from './types';
 export interface Brouillon {
   type: TypeOperation; montant: Centimes | null; compteId?: string; compteDestId?: string;
   categorieId?: string; date: DateISO; libelle: string; horsSolde: boolean;
+  /** Conservé quand on modifie une occurrence de récurrence. */
+  recurrenceId?: string;
 }
 
 export function erreurOperation(b: Brouillon): string | null {
@@ -30,6 +32,7 @@ export function versOperation(b: Brouillon, id: string): Operation {
   if (b.type === 'transfert') o.compteDestId = b.compteDestId;
   else o.categorieId = b.categorieId;
   if (b.horsSolde) o.horsSolde = true;
+  if (b.recurrenceId) o.recurrenceId = b.recurrenceId;
   return o;
 }
 
@@ -37,6 +40,7 @@ export function versBrouillon(o: Operation): Brouillon {
   return {
     type: o.type, montant: o.montant, compteId: o.compteId, compteDestId: o.compteDestId,
     categorieId: o.categorieId, date: o.date, libelle: o.libelle, horsSolde: Boolean(o.horsSolde),
+    recurrenceId: o.recurrenceId,
   };
 }
 

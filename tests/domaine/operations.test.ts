@@ -103,3 +103,9 @@ describe('hors solde', () => {
     expect(versOperation(versBrouillon(o), 'x')).toEqual(o);
   });
 });
+
+test('modifier une occurrence conserve son recurrenceId', () => {
+  const o = versOperation(base, 'x');
+  const occurrence = { ...o, recurrenceId: 'r1' };
+  expect(versOperation(versBrouillon(occurrence), 'x')).toEqual(occurrence);
+});
