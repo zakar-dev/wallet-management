@@ -1,5 +1,5 @@
 import {
-  budgetDuMois, enveloppe, etatEnveloppe, idAssignation, pretAAssigner, ratioConsomme, resumeBudget, versAssignation,
+  avecAssigne, budgetDuMois, enveloppe, etatEnveloppe, idAssignation, pretAAssigner, ratioConsomme, resumeBudget, versAssignation,
   type Enveloppe,
 } from '@/src/domaine/budget';
 import { CATEGORIES_PAR_DEFAUT, GROUPES_PAR_DEFAUT } from '@/src/domaine/categories';
@@ -104,4 +104,9 @@ test('resumeBudget du mois', () => {
 test('versAssignation', () => {
   expect(versAssignation('2026-11', 'c-courses', 50000))
     .toEqual({ id: '2026-11:c-courses', mois: '2026-11', categorieId: 'c-courses', montant: 50000 });
+});
+
+test('avecAssigne recalcule le reste pour un nouveau montant assigné', () => {
+  const e = { report: 10000, assigne: 50000, depense: 20000, reste: 40000 };
+  expect(avecAssigne(e, 5000)).toEqual({ report: 10000, assigne: 5000, depense: 20000, reste: -5000 });
 });

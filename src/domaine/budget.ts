@@ -100,3 +100,8 @@ export function resumeBudget(d: Donnees, mois: Mois): ResumeBudget {
   const depense = lignes.reduce((s, l) => s + l.enveloppe.depense, 0);
   return { budget, depense, reste: budget - depense, ratio: budget > 0 ? Math.min(1, depense / budget) : 0 };
 }
+
+/** L'enveloppe telle qu'elle serait avec un autre montant assigné (aperçu avant validation). */
+export function avecAssigne(e: Enveloppe, assigne: Centimes): Enveloppe {
+  return { ...e, assigne, reste: e.report + assigne - e.depense };
+}
