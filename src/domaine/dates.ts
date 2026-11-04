@@ -52,3 +52,8 @@ export function estDateValide(s: string): boolean {
   const [a, m, j] = decouper(s);
   return aujourdhui(new Date(a, m - 1, j)) === s;
 }
+
+/** Le `jour` du mois, ramené au dernier jour si le mois est plus court (31 → 30 avril). */
+export function dateDuMois(mois: Mois, jour: number): DateISO {
+  return `${mois}-${p2(Math.min(jour, joursDansMois(mois)))}`;
+}

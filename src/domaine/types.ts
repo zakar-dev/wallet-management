@@ -23,10 +23,10 @@ export interface Operation {
 
 export interface Assignation { id: string; mois: Mois; categorieId: string; montant: Centimes }
 
-export type ModeleOperation = Omit<Operation, 'id' | 'date' | 'recurrenceId'>;
+export type ModeleOperation = Omit<Operation, 'id' | 'date' | 'recurrenceId' | 'horsSolde'>;
+/** Récurrence mensuelle : `jour` 1–31, ramené au dernier jour des mois plus courts. */
 export interface Recurrence {
-  id: string; modele: ModeleOperation; frequence: 'hebdo' | 'mensuelle';
-  prochaineEcheance: DateISO; active: boolean;
+  id: string; modele: ModeleOperation; jour: number; prochaineEcheance: DateISO; active: boolean;
 }
 
 export interface Objectif {
