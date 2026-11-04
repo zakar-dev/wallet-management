@@ -60,6 +60,12 @@ export function dateDuMois(mois: Mois, jour: number): DateISO {
 
 const MOIS_COURTS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
 
+/** Nombre de cases avant le 1er du mois dans un calendrier commençant le lundi (0 à 6). */
+export function decalageLundi(mois: Mois): number {
+  const [a, m] = decouper(mois);
+  return (new Date(a, m - 1, 1).getDay() + 6) % 7;
+}
+
 /** « nov. » : étiquettes d'axe. */
 export function libelleMoisCourt(mois: Mois): string {
   return MOIS_COURTS[Number(mois.slice(5, 7)) - 1];

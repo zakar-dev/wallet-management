@@ -1,5 +1,5 @@
 import {
-  ajouterJours, ajouterMois, aujourdhui, dateDuMois, estDateValide, libelleMoisCourt, joursDansMois, libelleJour, libelleMois, moisDe,
+  ajouterJours, ajouterMois, aujourdhui, dateDuMois, decalageLundi, estDateValide, libelleMoisCourt, joursDansMois, libelleJour, libelleMois, moisDe,
 } from '@/src/domaine/dates';
 
 test('aujourdhui formate en local', () => {
@@ -44,4 +44,10 @@ test('libelleMoisCourt', () => {
   expect(libelleMoisCourt('2026-11')).toBe('nov.');
   expect(libelleMoisCourt('2026-05')).toBe('mai');
   expect(libelleMoisCourt('2026-07')).toBe('juil.');
+});
+
+test('decalageLundi : cases vides avant le 1er dans une semaine lundi → dimanche', () => {
+  expect(decalageLundi('2026-11')).toBe(6); // 1er novembre 2026 : dimanche
+  expect(decalageLundi('2026-06')).toBe(0); // 1er juin 2026 : lundi
+  expect(decalageLundi('2026-10')).toBe(3); // 1er octobre 2026 : jeudi
 });
