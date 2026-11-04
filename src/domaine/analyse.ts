@@ -64,11 +64,17 @@ export interface Indicateurs {
 /** Moyenne mensuelle des dépenses sur les 6 mois avant `mois`, depuis la première opération (au moins 1 mois). */
 export function moyenneDepenses6Mois(ops: Operation[], mois: Mois): Centimes {
   const comptees = operationsComptees(ops);
-  if (comptees.length === 0) return 0;
-  const premier = comptees.reduce((m, o) => (moisDe(o.date) < m ? moisDe(o.date) : m), moisDe(comptees[0].date));
-  const fenetre = moisJusqua(ajouterMois(mois, -1), 6).filter((m) => m >= premier);
+  const fenetre = fenetrePrecedente(comptees, mois);
   if (fenetre.length === 0) return 0;
   return Math.round(fenetre.reduce((s, m) => s + somme(depensesDuMois(comptees, m)), 0) / fenetre.length);
+}
+
+/** Les 6 mois avant `mois`, sans remonter avant le mois de la première opération comptée. */
+export function fenetrePrecedente(ops: Operation[], mois: Mois): Mois[] {
+  const comptees = operationsComptees(ops);
+  if (comptees.length === 0) return [];
+  const premier = comptees.reduce((m, o) => (moisDe(o.date) < m ? moisDe(o.date) : m), moisDe(comptees[0].date));
+  return moisJusqua(ajouterMois(mois, -1), 6).filter((m) => m >= premier);
 }
 
 export function indicateursMois(d: Donnees, mois: Mois, aujourdhui: DateISO): Indicateurs {
