@@ -89,6 +89,19 @@ export default function Ajout() {
     );
   }
 
+  if (existante?.detteId) {
+    const detteId = existante.detteId;
+    return (
+      <View style={{ flex: 1, backgroundColor: t.fond }}>
+        <EnTeteFeuille titre={existante.libelle || 'Mouvement'} gauche="Retour" onGauche={fermer} />
+        <Section pied="Ce mouvement appartient à une dette : modifiez ou supprimez-le depuis la dette.">
+          <Ligne titre="Voir la dette" icone="hand-coins" couleurIcone="#ff375f" chevron
+            onPress={() => router.replace(`/dettes/${detteId}`)} />
+        </Section>
+      </View>
+    );
+  }
+
   const nomCompte = (cid?: string) => donnees.comptes.find((c) => c.id === cid)?.nom ?? 'Choisir';
   const categorie = donnees.categories.find((c) => c.id === b.categorieId);
   const today = aujourdhui();

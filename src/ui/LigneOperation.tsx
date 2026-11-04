@@ -34,8 +34,8 @@ export function LigneOperation({ operation: o, donnees, onPress }: Props) {
   const couleur = o.horsSolde ? t.texte2 : o.type === 'revenu' ? t.succes : t.texte;
   return (
     <Ligne
-      icone={categorie?.icone ?? 'ellipsis'}
-      couleurIcone={categorie?.couleur ?? '#8e8e93'}
+      icone={o.detteId ? 'hand-coins' : categorie?.icone ?? 'ellipsis'}
+      couleurIcone={o.detteId ? '#ff375f' : categorie?.couleur ?? '#8e8e93'}
       titre={o.libelle || categorie?.nom || 'Sans catégorie'}
       sousTitre={details([o.libelle ? categorie?.nom : undefined, nomCompte(o.compteId)])}
       valeur={formatMontant(montantSigne(o), { signe: true })}
