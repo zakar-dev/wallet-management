@@ -5,8 +5,6 @@ import { Ligne, Section } from '@/src/ui/Liste';
 const BIENTOT: [string, string, string][] = [
   ['Habitudes', 'coffee', '#ac8e68'],
   ['Prévisions', 'zap', '#ffd60a'],
-  ['Sauvegarde', 'shield', '#5e5ce6'],
-  ['Réglages', 'ellipsis', '#8e8e93'],
 ];
 
 export default function Plus() {
@@ -18,6 +16,10 @@ export default function Plus() {
         <Ligne titre="Récurrents" icone="repeat" couleurIcone="#bf5af2" onPress={() => router.push('/recurrences')} chevron />
         <Ligne titre="Objectifs" icone="piggy-bank" couleurIcone="#30d158" onPress={() => router.push('/objectifs')} chevron />
         <Ligne titre="Dettes & créances" icone="hand-coins" couleurIcone="#ff375f" onPress={() => router.push('/dettes')} chevron />
+      </Section>
+      <Section>
+        <Ligne titre="Sauvegarde" icone="shield" couleurIcone="#5e5ce6" onPress={() => router.push('/sauvegarde')} chevron />
+        <Ligne titre="Réglages" icone="ellipsis" couleurIcone="#8e8e93" onPress={() => router.push('/reglages')} chevron />
       </Section>
       <Section>
         {BIENTOT.map(([titre, icone, couleur]) => (

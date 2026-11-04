@@ -2,10 +2,12 @@ import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { etatEnveloppe, resumeBudget } from '@/src/domaine/budget';
 import { comptesActifs, disponible, patrimoineNet, soldeCompte } from '@/src/domaine/comptes';
-import { aujourdhui, moisDe } from '@/src/domaine/dates';
+import { aujourdhui, joursEntre, moisDe } from '@/src/domaine/dates';
 import { formatMontant } from '@/src/domaine/montant';
 import { operationsRecentes } from '@/src/domaine/operations';
+import { rappelSauvegarde } from '@/src/domaine/sauvegarde';
 import { useDonnees } from '@/src/stockage/DonneesProvider';
+import { lireDerniereSauvegarde } from '@/src/stockage/reglages';
 import { Anneau } from '@/src/ui/Anneau';
 import { CarteCompte } from '@/src/ui/CarteCompte';
 import { couleurEtat } from '@/src/ui/Jauge';
@@ -20,7 +22,10 @@ export default function Accueil() {
   const { donnees } = useDonnees();
   const { comptes, operations, dettes } = donnees;
   const actifs = comptesActifs(comptes);
-  const resume = resumeBudget(donnees, moisDe(aujourdhui()));
+  const today = aujourdhui();
+  const resume = resumeBudget(donnees, moisDe(today));
+  const derniereSauvegarde = lireDerniereSauvegarde();
+  const rappel = rappelSauvegarde(derniereSauvegarde, today, comptes.length > 0);
   const etat = etatEnveloppe({ report: 0, assigne: resume.budget, depense: resume.depense, reste: resume.reste });
 
   return (
@@ -34,6 +39,14 @@ export default function Accueil() {
           Disponible {formatMontant(disponible(comptes, operations))} MAD
         </Texte>
       </View>
+
+      {rappel ? (
+        <Section>
+          <Ligne titre="Pensez à sauvegarder vos données" icone="shield" couleurIcone={t.alerte}
+            sousTitre={derniereSauvegarde ? `Dernière sauvegarde il y a ${joursEntre(derniereSauvegarde, today)} jours` : 'Aucune sauvegarde pour l’instant'}
+            onPress={() => router.push('/sauvegarde')} chevron />
+        </Section>
+      ) : null}
 
       {actifs.length === 0 ? (
         <Section>
