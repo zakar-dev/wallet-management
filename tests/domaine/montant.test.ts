@@ -1,4 +1,4 @@
-import { formatMontant, parseMontant } from '@/src/domaine/montant';
+import { formatMontant, formatMontantCourt, parseMontant } from '@/src/domaine/montant';
 
 describe('formatMontant', () => {
   test('milliers et décimales', () => {
@@ -30,4 +30,12 @@ describe('parseMontant', () => {
   test.each(['', 'abc', '1,234', '-5', '1,2,3'])('%s invalide', (saisie) => {
     expect(parseMontant(saisie)).toBeNull();
   });
+});
+
+test('formatMontantCourt pour les axes', () => {
+  expect(formatMontantCourt(85000)).toBe('850');
+  expect(formatMontantCourt(900000)).toBe('9 k');
+  expect(formatMontantCourt(950000)).toBe('9,5 k');
+  expect(formatMontantCourt(-120000)).toBe('−1,2 k');
+  expect(formatMontantCourt(0)).toBe('0');
 });

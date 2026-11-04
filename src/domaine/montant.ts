@@ -20,3 +20,12 @@ export function parseMontant(saisie: string): Centimes | null {
   const [entiers, decimales = ''] = propre.split('.');
   return Number(entiers) * 100 + Number(decimales.padEnd(2, '0'));
 }
+
+/** Montant arrondi pour les axes de graphique : « 850 », « 9 k », « 9,5 k » (en MAD). */
+export function formatMontantCourt(c: Centimes): string {
+  const mad = Math.abs(c) / 100;
+  const signe = c < 0 ? MOINS : '';
+  if (mad < 1000) return signe + String(Math.round(mad));
+  const k = Math.round(mad / 100) / 10;
+  return `${signe}${String(k).replace('.', ',')} k`;
+}

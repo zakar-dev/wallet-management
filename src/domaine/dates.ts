@@ -58,6 +58,13 @@ export function dateDuMois(mois: Mois, jour: number): DateISO {
   return `${mois}-${p2(Math.min(jour, joursDansMois(mois)))}`;
 }
 
+const MOIS_COURTS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+
+/** « nov. » : étiquettes d'axe. */
+export function libelleMoisCourt(mois: Mois): string {
+  return MOIS_COURTS[Number(mois.slice(5, 7)) - 1];
+}
+
 /** Nombre de jours de `debut` à `fin` (négatif si `fin` est avant). */
 export function joursEntre(debut: DateISO, fin: DateISO): number {
   const utc = (d: DateISO) => { const [a, m, j] = decouper(d); return Date.UTC(a, m - 1, j); };

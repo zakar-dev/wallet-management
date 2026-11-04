@@ -1,7 +1,7 @@
 import {
-  ArrowLeftRight, Baby, Banknote, Bath, Briefcase, Bus, Car, CirclePlus, Coffee, Dumbbell, Ellipsis, Fuel,
+  ArrowLeftRight, Baby, CalendarDays, ChartColumn, ChartLine, Banknote, Bath, Briefcase, Bus, Car, CirclePlus, Coffee, Dumbbell, Ellipsis, Fuel,
   Gamepad2, Gift, GraduationCap, HandCoins, HeartPulse, House, Key, PawPrint, PiggyBank, Plane, Repeat,
-  Shield, Shirt, ShoppingBag, ShoppingCart, Smartphone, Tag, Utensils, Wallet, Wifi, Zap,
+  Shield, Shirt, ShoppingBag, TrendingUp, ShoppingCart, Smartphone, Tag, Utensils, Wallet, Wifi, Zap,
   type LucideIcon,
 } from 'lucide-react-native';
 import type { TypeCompte } from '@/src/domaine/types';
@@ -13,6 +13,7 @@ export const ICONES: Record<string, LucideIcon> = {
   'bus': Bus, 'car': Car, 'heart-pulse': HeartPulse, 'shopping-bag': ShoppingBag, 'gamepad-2': Gamepad2,
   'graduation-cap': GraduationCap, 'baby': Baby, 'plane': Plane, 'smartphone': Smartphone, 'shirt': Shirt,
   'dumbbell': Dumbbell, 'paw-print': PawPrint, 'hand-coins': HandCoins, 'ellipsis': Ellipsis,
+  'chart-column': ChartColumn, 'chart-line': ChartLine, 'calendar-days': CalendarDays, 'trending-up': TrendingUp,
   'wallet': Wallet, 'piggy-bank': PiggyBank, 'banknote': Banknote, 'arrow-left-right': ArrowLeftRight,
 };
 

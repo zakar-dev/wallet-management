@@ -1,5 +1,5 @@
 import {
-  ajouterJours, ajouterMois, aujourdhui, dateDuMois, estDateValide, joursDansMois, libelleJour, libelleMois, moisDe,
+  ajouterJours, ajouterMois, aujourdhui, dateDuMois, estDateValide, libelleMoisCourt, joursDansMois, libelleJour, libelleMois, moisDe,
 } from '@/src/domaine/dates';
 
 test('aujourdhui formate en local', () => {
@@ -38,4 +38,10 @@ test('dateDuMois borne au dernier jour du mois', () => {
   expect(dateDuMois('2026-04', 31)).toBe('2026-04-30');
   expect(dateDuMois('2026-02', 31)).toBe('2026-02-28');
   expect(dateDuMois('2028-02', 30)).toBe('2028-02-29');
+});
+
+test('libelleMoisCourt', () => {
+  expect(libelleMoisCourt('2026-11')).toBe('nov.');
+  expect(libelleMoisCourt('2026-05')).toBe('mai');
+  expect(libelleMoisCourt('2026-07')).toBe('juil.');
 });

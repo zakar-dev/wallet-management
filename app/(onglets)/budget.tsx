@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { router } from 'expo-router';
-import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { budgetDuMois, etatEnveloppe, pretAAssigner, ratioConsomme, type LigneBudget } from '@/src/domaine/budget';
-import { ajouterMois, aujourdhui, libelleMois, moisDe } from '@/src/domaine/dates';
+import { aujourdhui, moisDe } from '@/src/domaine/dates';
 import { formatMontant } from '@/src/domaine/montant';
 import { useDonnees } from '@/src/stockage/DonneesProvider';
 import { Ecran } from '@/src/ui/Ecran';
 import { IconeCarree } from '@/src/ui/IconeCarree';
 import { couleurEtat, Jauge } from '@/src/ui/Jauge';
 import { Section } from '@/src/ui/Liste';
+import { SelecteurMois } from '@/src/ui/SelecteurMois';
 import { Texte } from '@/src/ui/Texte';
 import { useTheme } from '@/src/ui/theme';
 
@@ -52,15 +52,7 @@ export default function Budget() {
 
   return (
     <Ecran titre="Budget" onglet>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 16, marginTop: 12 }}>
-        <Pressable accessibilityLabel="Mois précédent" hitSlop={12} onPress={() => setMois(ajouterMois(mois, -1))}>
-          <ChevronLeft color={t.accent} size={26} />
-        </Pressable>
-        <Texte variante="titre">{libelleMois(mois)}</Texte>
-        <Pressable accessibilityLabel="Mois suivant" hitSlop={12} onPress={() => setMois(ajouterMois(mois, 1))}>
-          <ChevronRight color={t.accent} size={26} />
-        </Pressable>
-      </View>
+      <SelecteurMois mois={mois} onChange={setMois} />
 
       <View style={{ marginHorizontal: 16, marginTop: 16, padding: 16, borderRadius: 14, backgroundColor: t.carte, alignItems: 'center' }}>
         <Texte variante="petit">Prêt à assigner</Texte>

@@ -11,6 +11,9 @@ export default function Plus() {
   return (
     <Ecran titre="Plus" onglet>
       <Section>
+        <Ligne titre="Analyse" icone="chart-column" couleurIcone="#0a84ff" onPress={() => router.push('/analyse')} chevron />
+      </Section>
+      <Section>
         <Ligne titre="Comptes" icone="wallet" couleurIcone="#0a84ff" onPress={() => router.push('/comptes')} chevron />
         <Ligne titre="Catégories" icone="tag" couleurIcone="#ff9f0a" onPress={() => router.push('/categories')} chevron />
         <Ligne titre="Récurrents" icone="repeat" couleurIcone="#bf5af2" onPress={() => router.push('/recurrences')} chevron />
