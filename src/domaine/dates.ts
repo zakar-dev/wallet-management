@@ -57,3 +57,9 @@ export function estDateValide(s: string): boolean {
 export function dateDuMois(mois: Mois, jour: number): DateISO {
   return `${mois}-${p2(Math.min(jour, joursDansMois(mois)))}`;
 }
+
+/** Nombre de jours de `debut` à `fin` (négatif si `fin` est avant). */
+export function joursEntre(debut: DateISO, fin: DateISO): number {
+  const utc = (d: DateISO) => { const [a, m, j] = decouper(d); return Date.UTC(a, m - 1, j); };
+  return Math.round((utc(fin) - utc(debut)) / 86400000);
+}
