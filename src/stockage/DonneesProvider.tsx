@@ -1,12 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
+import { aujourdhui } from '@/src/domaine/dates';
 import { avecEntites, sansEntite } from '@/src/domaine/donnees';
 import type { Collection, Donnees, EntiteDe } from '@/src/domaine/types';
 import { useTheme } from '@/src/ui/theme';
 import type { Depot } from './depot';
 import { DepotMemoire } from './depotMemoire';
 import { ouvrirDepotIndexedDb } from './depotIndexedDb';
-import { initialiserSiVide } from './initialisation';
+import { initialiserSiVide, rattraperRecurrences } from './initialisation';
 
 interface ContexteDonnees {
   donnees: Donnees;
@@ -29,7 +30,9 @@ export function DonneesProvider({ children, depot }: { children: ReactNode; depo
     let annule = false;
     (async () => {
       const d = depot ?? (await ouvrirDepot());
-      const donnees = await initialiserSiVide(d);
+      await initialiserSiVide(d);
+      // Crée les occurrences des récurrences arrivées à échéance depuis la dernière ouverture.
+      const donnees = await rattraperRecurrences(d, aujourdhui());
       if (!annule) setEtat({ depot: d, donnees });
     })().catch((e) => console.error('Chargement des données impossible', e));
     return () => { annule = true; };

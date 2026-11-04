@@ -3,7 +3,7 @@ import 'fake-indexeddb/auto';
 import type { Depot } from '@/src/stockage/depot';
 import { DepotMemoire } from '@/src/stockage/depotMemoire';
 import { ouvrirDepotIndexedDb } from '@/src/stockage/depotIndexedDb';
-import { initialiserSiVide } from '@/src/stockage/initialisation';
+import { initialiserSiVide, rattraperRecurrences } from '@/src/stockage/initialisation';
 import { donneesVides, type Compte } from '@/src/domaine/types';
 
 const compte = (id: string, nom: string): Compte =>
@@ -50,5 +50,25 @@ describe.each(fabriques)('Depot %s', (_nom, fabrique) => {
     await depot.supprimer('categories', 'c-cafe');
     const d2 = await initialiserSiVide(depot);
     expect(d2.categories.find((c) => c.id === 'c-cafe')).toBeUndefined();
+  });
+});
+
+describe('rattraperRecurrences', () => {
+  test('crée les opérations dues, avance l’échéance, ne refait rien au second appel', async () => {
+    const depot = new DepotMemoire({
+      ...donneesVides(),
+      recurrences: [{
+        id: 'r1', jour: 5, active: true, prochaineEcheance: '2026-09-05',
+        modele: { montant: 300000, type: 'depense', compteId: 'cih', categorieId: 'c-loyer', libelle: 'Loyer' },
+      }],
+    });
+    let n = 0;
+    const id = () => `g${++n}`;
+    const d1 = await rattraperRecurrences(depot, '2026-11-04', id);
+    expect(d1.operations.map((o) => o.date)).toEqual(['2026-09-05', '2026-10-05']);
+    expect(d1.recurrences[0].prochaineEcheance).toBe('2026-11-05');
+    expect((await depot.toutLire()).operations).toHaveLength(2);
+    const d2 = await rattraperRecurrences(depot, '2026-11-04', id);
+    expect(d2.operations).toHaveLength(2);
   });
 });
