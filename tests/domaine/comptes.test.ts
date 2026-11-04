@@ -72,3 +72,16 @@ test('erreurCompte', () => {
   expect(erreurCompte({ nom: '  ' })).toBe('Donnez un nom au compte');
   expect(erreurCompte({ nom: 'CIH' })).toBeNull();
 });
+
+test('les opérations hors solde ne changent pas le solde', () => {
+  const historiques: Operation[] = [
+    ...ops,
+    op({ type: 'depense', montant: 99999, compteId: 'courant', categorieId: 'c-loyer', horsSolde: true }),
+    op({ type: 'transfert', montant: 50000, compteId: 'courant', compteDestId: 'epargne', horsSolde: true }),
+    op({ type: 'revenu', montant: 12345, compteId: 'especes', categorieId: 'c-primes', horsSolde: true }),
+  ];
+  expect(soldeCompte(courant, historiques)).toBe(644950);
+  expect(soldeCompte(epargne, historiques)).toBe(700000);
+  expect(soldeCompte(especes, historiques)).toBe(26500);
+  expect(patrimoineNet([courant, epargne, especes], historiques, [])).toBe(644950 + 700000 + 26500);
+});

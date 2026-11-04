@@ -37,7 +37,7 @@ export default function Ajout() {
   const comptes = comptesActifs(donnees.comptes);
 
   const [b, setB] = useState<Brouillon>(() => existante ? versBrouillon(existante) : {
-    type: 'depense', montant: null, compteId: compteParDefaut(donnees.comptes)?.id, date: aujourdhui(), libelle: '',
+    type: 'depense', montant: null, compteId: compteParDefaut(donnees.comptes)?.id, date: aujourdhui(), libelle: '', horsSolde: false,
   });
   const [montantTexte, setMontantTexte] = useState(existante ? formatMontant(existante.montant) : '');
   const [ouvert, setOuvert] = useState<Ouvert>(null);

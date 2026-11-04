@@ -17,6 +17,8 @@ export type TypeOperation = 'depense' | 'revenu' | 'transfert';
 export interface Operation {
   id: string; date: DateISO; montant: Centimes; type: TypeOperation; compteId: string;
   compteDestId?: string; categorieId?: string; libelle: string; recurrenceId?: string;
+  /** Opération historique déjà reflétée dans le solde d'ouverture : exclue de tous les calculs. */
+  horsSolde?: boolean;
 }
 
 export interface Assignation { id: string; mois: Mois; categorieId: string; montant: Centimes }

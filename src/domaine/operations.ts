@@ -5,7 +5,7 @@ import type { Categorie, Operation, TypeOperation } from './types';
 
 export interface Brouillon {
   type: TypeOperation; montant: Centimes | null; compteId?: string; compteDestId?: string;
-  categorieId?: string; date: DateISO; libelle: string;
+  categorieId?: string; date: DateISO; libelle: string; horsSolde: boolean;
 }
 
 export function erreurOperation(b: Brouillon): string | null {
@@ -29,20 +29,32 @@ export function versOperation(b: Brouillon, id: string): Operation {
   };
   if (b.type === 'transfert') o.compteDestId = b.compteDestId;
   else o.categorieId = b.categorieId;
+  if (b.horsSolde) o.horsSolde = true;
   return o;
 }
 
 export function versBrouillon(o: Operation): Brouillon {
   return {
     type: o.type, montant: o.montant, compteId: o.compteId, compteDestId: o.compteDestId,
-    categorieId: o.categorieId, date: o.date, libelle: o.libelle,
+    categorieId: o.categorieId, date: o.date, libelle: o.libelle, horsSolde: Boolean(o.horsSolde),
   };
 }
 
-export function effetNet(o: Operation): Centimes {
+/** Montant signé selon le type (revenu +, dépense −, transfert 0), même hors solde : pour l'affichage. */
+export function montantSigne(o: Operation): Centimes {
   if (o.type === 'revenu') return o.montant;
   if (o.type === 'depense') return -o.montant;
   return 0;
+}
+
+/** Effet sur les soldes : nul pour une opération hors solde. */
+export function effetNet(o: Operation): Centimes {
+  return o.horsSolde ? 0 : montantSigne(o);
+}
+
+/** Valeur par défaut de « Déjà incluse dans le solde » : vrai pour une date passée. */
+export function horsSoldeSelonDate(date: DateISO, aujourdhui: DateISO): boolean {
+  return date < aujourdhui;
 }
 
 /** Plus récentes d'abord ; à date égale, l'ordre de saisie le plus récent d'abord. */

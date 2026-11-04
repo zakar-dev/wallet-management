@@ -1,11 +1,11 @@
 import {
-  FILTRE_VIDE, categoriesUtilisees, erreurOperation, filtrerOperations, grouperParJour, operationsRecentes, versBrouillon,
+  FILTRE_VIDE, categoriesUtilisees, effetNet, erreurOperation, horsSoldeSelonDate, montantSigne, filtrerOperations, grouperParJour, operationsRecentes, versBrouillon,
   versOperation, type Brouillon,
 } from '@/src/domaine/operations';
 import { CATEGORIES_PAR_DEFAUT } from '@/src/domaine/categories';
 import type { Operation } from '@/src/domaine/types';
 
-const base: Brouillon = { type: 'depense', montant: 1500, compteId: 'a', categorieId: 'c-cafe', date: '2026-11-03', libelle: ' Café Paul ' };
+const base: Brouillon = { type: 'depense', montant: 1500, compteId: 'a', categorieId: 'c-cafe', date: '2026-11-03', libelle: ' Café Paul ', horsSolde: false };
 
 describe('erreurOperation', () => {
   test('valide', () => expect(erreurOperation(base)).toBeNull());
@@ -73,4 +73,33 @@ test('operationsRecentes', () => {
 
 test('categoriesUtilisees : seulement celles présentes dans les opérations, par nom', () => {
   expect(categoriesUtilisees(CATEGORIES_PAR_DEFAUT, ops).map((c) => c.nom)).toEqual(['Café', 'Courses', 'Salaire']);
+});
+
+describe('hors solde', () => {
+  test('horsSoldeSelonDate : seulement avant aujourd’hui', () => {
+    expect(horsSoldeSelonDate('2026-11-03', '2026-11-04')).toBe(true);
+    expect(horsSoldeSelonDate('2026-11-04', '2026-11-04')).toBe(false);
+    expect(horsSoldeSelonDate('2026-11-05', '2026-11-04')).toBe(false);
+  });
+  test('effetNet nul mais montantSigne conservé', () => {
+    const o: Operation = { id: 'h', date: '2026-10-01', montant: 1000, type: 'depense', compteId: 'a', categorieId: 'c-cafe', libelle: '', horsSolde: true };
+    expect(effetNet(o)).toBe(0);
+    expect(montantSigne(o)).toBe(-1000);
+    expect(montantSigne({ ...o, type: 'revenu' })).toBe(1000);
+    expect(montantSigne({ ...o, type: 'transfert', compteDestId: 'b' })).toBe(0);
+  });
+  test('total du jour ignore les opérations hors solde', () => {
+    const jour = grouperParJour([
+      { id: '1', date: '2026-10-01', montant: 1000, type: 'depense', compteId: 'a', categorieId: 'c-cafe', libelle: '' },
+      { id: '2', date: '2026-10-01', montant: 5000, type: 'depense', compteId: 'a', categorieId: 'c-cafe', libelle: '', horsSolde: true },
+    ]);
+    expect(jour[0].total).toBe(-1000);
+    expect(jour[0].operations).toHaveLength(2);
+  });
+  test('versOperation n’écrit horsSolde que s’il est vrai, aller-retour conservé', () => {
+    expect('horsSolde' in versOperation({ ...base, horsSolde: false }, 'x')).toBe(false);
+    const o = versOperation({ ...base, horsSolde: true }, 'x');
+    expect(o.horsSolde).toBe(true);
+    expect(versOperation(versBrouillon(o), 'x')).toEqual(o);
+  });
 });

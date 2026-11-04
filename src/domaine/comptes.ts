@@ -8,6 +8,7 @@ export const LIBELLES_TYPE_COMPTE: Record<TypeCompte, string> = {
 export function soldeCompte(compte: Compte, operations: Operation[]): Centimes {
   let solde = compte.soldeOuverture;
   for (const o of operations) {
+    if (o.horsSolde) continue;
     if (o.type === 'transfert') {
       if (o.compteId === compte.id) solde -= o.montant;
       if (o.compteDestId === compte.id) solde += o.montant;
