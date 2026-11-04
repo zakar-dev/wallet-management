@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, Switch, View } from 'react-native';
+import { ScrollView, Switch, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Check } from 'lucide-react-native';
-import { categorieUtilisee, COULEURS, erreurCategorie, groupesTries, ICONES_CATEGORIES } from '@/src/domaine/categories';
+import { categorieUtilisee, COULEURS, erreurCategorie, groupesTries } from '@/src/domaine/categories';
 import { nouvelId } from '@/src/domaine/id';
 import type { Categorie } from '@/src/domaine/types';
 import { useDonnees } from '@/src/stockage/DonneesProvider';
@@ -10,7 +10,7 @@ import { BoutonSupprimer } from '@/src/ui/BoutonSupprimer';
 import { Champ } from '@/src/ui/Champ';
 import { EnTeteFeuille } from '@/src/ui/Ecran';
 import { IconeCarree } from '@/src/ui/IconeCarree';
-import { iconeDe } from '@/src/ui/icones';
+import { GrilleIcones } from '@/src/ui/GrilleIcones';
 import { Ligne, Section } from '@/src/ui/Liste';
 import { retour } from '@/src/ui/navigation';
 import { Nuancier } from '@/src/ui/Nuancier';
@@ -75,21 +75,7 @@ export default function FormulaireCategorie() {
           <Nuancier valeur={couleur} onChange={setCouleur} />
         </Section>
         <Section titre="Icône">
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, padding: 14 }}>
-            {ICONES_CATEGORIES.map((nomIcone) => {
-              const Icone = iconeDe(nomIcone);
-              const choisie = nomIcone === icone;
-              return (
-                <Pressable key={nomIcone} accessibilityLabel={`Icône ${nomIcone}`} onPress={() => setIcone(nomIcone)}
-                  style={{
-                    width: 44, height: 44, borderRadius: 11, alignItems: 'center', justifyContent: 'center',
-                    backgroundColor: choisie ? couleur : t.carte2,
-                  }}>
-                  <Icone color={choisie ? '#ffffff' : t.texte} size={22} />
-                </Pressable>
-              );
-            })}
-          </View>
+          <GrilleIcones valeur={icone} couleur={couleur} onChange={setIcone} />
         </Section>
         {existante && (categorieUtilisee(existante.id, donnees.operations) ? (
           <Section pied="Catégorie utilisée par des opérations.">{null}</Section>
